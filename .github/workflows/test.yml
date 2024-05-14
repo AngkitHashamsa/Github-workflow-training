@@ -15,6 +15,9 @@ jobs:
       - name: Run Test
         run: npm test
   deploy:
+    # It tells that test need to pass in order to for us deploy
+    # for multiple jobs we can wrap e.g [test,test2]
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Get Code
