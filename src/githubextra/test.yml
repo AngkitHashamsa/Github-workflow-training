@@ -13,6 +13,8 @@ jobs:
           node-version: 18
       - name: Intall dependencies
         run: npm ci
+      - name: Run Lint
+        run: npm run lint
       - name: Run Test
         run: npm test
   deploy:
