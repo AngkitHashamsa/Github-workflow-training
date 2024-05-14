@@ -1,5 +1,6 @@
 name: Deploy Project
-on: push
+# If want to add manula mode I can wrap it with [] and add the workflow_dispatch.
+on: [push, workflow_dispatch]
 jobs:
   test:
     runs-on: ubuntu-latest
