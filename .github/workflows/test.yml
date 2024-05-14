@@ -1,5 +1,6 @@
-name: Test Project
-on: push
+name: Deploy Project
+# If want to add manula mode I can wrap it with [] and add the workflow_dispatch.
+on: [push, workflow_dispatch]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -14,3 +15,21 @@ jobs:
         run: npm ci
       - name: Run Test
         run: npm test
+  deploy:
+    # It tells that test need to pass in order to for us deploy
+    # for multiple jobs we can wrap e.g [test,test2]
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Install Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Intall dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Deploy
+        run: echo "Deploying...."
