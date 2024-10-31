@@ -1,7 +1,6 @@
 name: Events Demo
-on:
-  pull_request:
-    types: [opened, reopened]
+on: 
+    push:  
 jobs:
     deploy:
         runs-on: ubuntu-latest
