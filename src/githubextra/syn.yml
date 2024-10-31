@@ -1,0 +1,40 @@
+name: Sync to Development
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  sync-pr:
+    if: github.event.label.name == 'merge to development'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up GitHub CLI
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Create sync PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr_number=$(jq -r '.number' < $GITHUB_EVENT_PATH)
+          pr_title=$(jq -r '.pull_request.title' < $GITHUB_EVENT_PATH)
+          pr_branch=$(jq -r '.pull_request.head.ref' < $GITHUB_EVENT_PATH)
+          pr_body="Sync ${pr_branch} with development branch"
+          new_branch="${pr_branch}-dev"
+
+          # Create a new branch from current PR branch
+          git fetch origin
+          git checkout -b $new_branch origin/$pr_branch
+          git push origin $new_branch
+
+          # Create the new PR using GitHub CLI
+          gh pr create --title "$pr_title (Sync to Development)" \
+                       --body "$pr_body" \
+                       --head "$new_branch" \
+                       --base "development"
